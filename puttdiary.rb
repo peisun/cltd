@@ -47,16 +47,17 @@ class Puttdiary
       req = Net::HTTP::Get.new(url.path)
       req.basic_auth(@user,@passwd)
       res = http.request(req)
+      puts res.body
 
       # csrf_protection_keyの抽出
-      if(%r!<input type="hidden" name="csrf_protection_key" value="([^"]+)"! =~ res.body)
-        @csrf_protection_key = $1
-        return AUTH_OK
-      else
-        puts "Not able to pickup csrf_protection_key"
-        puts "#{res.code}: #{res.message}"
-        return AUTH_NG
-      end
+#      if(%r!<input type="hidden" name="csrf_protection_key" value="([^"]+)"! =~ res.body)
+#        @csrf_protection_key = $1
+#        return AUTH_OK
+#      else
+#        puts "Not able to pickup csrf_protection_key"
+#        puts "#{res.code}: #{res.message}"
+#        return AUTH_NG
+#      end
     }
   end
   def entory_post_lastest(entory,lastest_day)
@@ -90,7 +91,7 @@ class Puttdiary
   def post(http,e)
     data = "&old="
     data << e.entory_date
-    data << "&csrf_protection_key=#{CGI::escape( CGI::unescapeHTML(@csrf_protection_key))}"
+#    data << "&csrf_protection_key=#{CGI::escape( CGI::unescapeHTML(@csrf_protection_key))}"
     data << "&year=#{e.year}"
     data << "&month=#{e.month}"
     data << "&day=#{e.day}"
