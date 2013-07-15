@@ -36,6 +36,8 @@ cltdは、Ruby 2.0.0p247(2013-06-27 revision 41674)[x86_64-darwin11.4.2]
 
 開発環境はMacBoox(2008 Later) OS-X 10.7.5です。
 
+tDiaryは3.2.2で確認しました。
+
 
 #インストール
 

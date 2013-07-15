@@ -17,6 +17,7 @@ require 'entory.rb'
 
 
 class Puttdiary
+  POST_ERROR_MSG="postできませんでした。"
   POST_OK = 200
   POST_NG = 400
   AUTH_OK = 300
@@ -29,6 +30,7 @@ class Puttdiary
     @server = srvr
   end
   def authorization(usr)
+    @csrf_protection_key = nil
     @user = usr
     puts "tDiary URL = " + @server
     puts "User ID = " + @user
@@ -47,10 +49,17 @@ class Puttdiary
       req = Net::HTTP::Get.new(url.path)
       req.basic_auth(@user,@passwd)
       res = http.request(req)
+
+      # csrf_protection_keyの抽出
+      if(%r!<input type="hidden" name="csrf_protection_key" value="([^"]+)"! =~ res.body)
+        @csrf_protection_key = $1
+      else
+#        puts "Not able to pickup csrf_protection_key"
+#        puts "#{res.code}: #{res.message}"
+      end
 #      puts res.body
 #      puts res.class
-      return res.class
-
+        return res.class
     }
   end
   def entory_post_lastest(entory,lastest_day)
@@ -58,9 +67,15 @@ class Puttdiary
     url = URI.parse(@server)
     res = Net::HTTP.start(url.host,url.port){ |http|
       (1..lastest_day).each do
-        e = entory.shift
-        post(http,e)
-        puts "posted lastest #{e.entory_date_strftime("%Y-%m-%d")}"
+        if((e = entory.shift) == nil) 
+          return 
+        end
+        if(post(http,e) == POST_OK)
+          puts "posted lastest #{e.entory_date_strftime("%Y-%m-%d")}"
+        else
+          puts POST_ERROR_MSG
+          return
+        end
 
       end
     }
@@ -72,8 +87,12 @@ class Puttdiary
       entory.each { |e|
         days.each { |d|
           if(e.entory_date_strftime("%Y-%m-%d") == d)
-            post(http,e)
-          puts "posted day #{e.entory_date_strftime("%Y-%m-%d")}"
+            if(post(http,e) == POST_OK)
+              puts "posted day #{e.entory_date_strftime("%Y-%m-%d")}"
+            else
+              puts POST_ERROR_MSG
+              return
+            end
         end
         }
       }
@@ -84,7 +103,9 @@ class Puttdiary
   def post(http,e)
     data = "&old="
     data << e.entory_date
-#    data << "&csrf_protection_key=#{CGI::escape( CGI::unescapeHTML(@csrf_protection_key))}"
+    if(@csrf_protection_key != nil)
+      data << "&csrf_protection_key=#{CGI::escape( CGI::unescapeHTML(@csrf_protection_key))}"
+    end
     data << "&year=#{e.year}"
     data << "&month=#{e.month}"
     data << "&day=#{e.day}"
@@ -96,8 +117,8 @@ class Puttdiary
     res = http.post( @server,data,
                      'Authorization' => "Basic #{@auth}",
                      'Referer' => "#{@server}")
-
-    #    puts res.body
+    
+#        puts res.body
     if(res.class == Net::HTTPOK)
       return POST_OK
     else
