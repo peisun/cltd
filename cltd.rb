@@ -11,6 +11,7 @@ config = ENV["HOME"] + "/.cltd.conf"
 MissingOption = "sorry. missing option"
 NoFoundConf = "sorry. no found config file."
 
+require 'net/http'
 require 'optparse'
 require 'inifile.rb'
 require 'changelog.rb'
@@ -106,7 +107,10 @@ entory = chlg.load($log)
 
 if(entory != nil)
   td = Puttdiary.new(ini.get(IniFile::Server))
-  td.authorization(ini.get(IniFile::User))
+  if(td.authorization(ini.get(IniFile::User)) != Net::HTTPOK)
+    puts "認証できませんでした。"
+    exit
+  end
 #  params.print
   if(params.getDays != nil)
     td.entory_post_days(entory,params.getDays)

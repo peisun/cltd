@@ -47,17 +47,10 @@ class Puttdiary
       req = Net::HTTP::Get.new(url.path)
       req.basic_auth(@user,@passwd)
       res = http.request(req)
-      puts res.body
+#      puts res.body
+#      puts res.class
+      return res.class
 
-      # csrf_protection_keyの抽出
-#      if(%r!<input type="hidden" name="csrf_protection_key" value="([^"]+)"! =~ res.body)
-#        @csrf_protection_key = $1
-#        return AUTH_OK
-#      else
-#        puts "Not able to pickup csrf_protection_key"
-#        puts "#{res.code}: #{res.message}"
-#        return AUTH_NG
-#      end
     }
   end
   def entory_post_lastest(entory,lastest_day)
