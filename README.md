@@ -27,18 +27,18 @@ chalowでもよかったのですが、OS-Xのバージョンをあげたとこ�
 使えなくなり、また使えるようにするにはどうしたらよいかという努力を怠った
 ので、使わなくなりました。
 
-----------------------------------------
-前提条件
-----------------------------------------
+
+#前提条件
+
 
 cltdは、Ruby 2.0.0p247(2013-06-27 revision 41674)[x86_64-darwin11.4.2]
 で動作確認しました。
 
 開発環境はMacBoox(2008 Later) OS-X 10.7.5です。
 
-----------------------------------------
-インストール
-----------------------------------------
+
+#インストール
+
 
 cltd.rbをPATHの通ったところに置くか、適当にディレクトリを作って
 そこにPATHを通してください。
@@ -48,9 +48,9 @@ cltd.rbをPATHの通ったところに置くか、適当にディレクトリを
 たぶん、使うほどのことはしていません。
 
 
-----------------------------------------
-概要
-----------------------------------------
+
+#概要
+
 
 cltdはChangeLogの記述内容から、日ごとの記述をtDiaryにポストします。
 但し、タイトルは付けません（今のところ）
@@ -61,20 +61,20 @@ cltdはChangeLogの記述内容から、日ごとの記述をtDiaryにポスト�
 最新の1日分は、ChangeLogのファイル先頭にある日付の内容です。
 たとえ、一週間ChangeLogを書いてなかろうがです。
 
-----------------------------------------
-使い方
-----------------------------------------
+
+#使い方
+
 
 cltdのPATHが通っているか、以下で確認できるかと思います。
 
-  $ cltd.rb -help
+    $ cltd.rb -help
 
 最初に設定ファイルを作ります。
 
 
-  server = http://hogehoge/update.rb
-  user = upnushi
-  diary = ~/Dropbox/diary/diary.txt
+    server = http://hogehoge/update.rb
+    user = upnushi
+    diary = ~/Dropbox/diary/diary.txt
 
 を書いたファイルをchlog.confをして保存します。
 * hogehogeは自分の使うサーバーのURLを使用してください。
@@ -83,37 +83,36 @@ cltdのPATHが通っているか、以下で確認できるかと思います。
 
 cltdはこのファイルを頼りに、tDiaryにpostします。
 
- $ ./cltd.rb -c chlog.conf
- Config: chlog.conf
- Diary: ~/Dropbox/diary/diary.txt
- tDiary URL = http://localhost/~peisunstar/tDiary/update.rb
- User ID = peisunstar
- Please passwd:
- posted lastest 2013-07-15
- $
+    $ ./cltd.rb -c chlog.conf
+    Config: chlog.conf
+    Diary: ~/Dropbox/diary/diary.txt
+    tDiary URL = http://localhost/~peisunstar/tDiary/update.rb
+    User ID = peisunstar
+    Please passwd:
+    posted lastest 2013-07-15
+    $
 
 とすれば、ChangeLogファイルを読み込み、tDiaryにpostします。
 
 -c で指定するファイル名はchlog.confでなくても構いません。
 hogeでもよいです。
 
- $ cltd.rb -c hoge
+    $ cltd.rb -c hoge
 
 毎度毎度、-c オプションを指定するのが面倒な場合は、$HOME/.cltd.confに
 同じ内容のものを書いておくとよいでしょう。
 
-----------------------------------------
-オプション
-----------------------------------------
+
+#オプション
 
 cltd.rbに-helpを指定すると、オプションが表示されます。
 
- $ ./cltd.rb -help
- Usage: cltd [options]
-     -c config file
-     -f changlog file
-     -l the lastest days
-     -d the date YYYY-MM-DD,..
+    $ ./cltd.rb -help
+    Usage: cltd [options]
+         -c config file
+         -f changlog file
+         -l the lastest days
+         -d the date YYYY-MM-DD,..
 
 -c は先ほどの通り設定ファイルを指定します。
 
@@ -126,19 +125,32 @@ cltd.rbに-helpを指定すると、オプションが表示されます。
 
 -lと-dが両方指定された場合は、-dが優先されます。
 
-----------------------------------------
-cltdにおけるChangeLogの特殊な記法
-----------------------------------------
+
+#cltdにおけるChangeLogの特殊な記法
+
 
 tDiaryの記法はtDiary wikiのみをサポートしています。
+
+## タイトル(tDiaryのタイトルではない)
+cltdはtDiaryでいうところのタイトルをサポートしていません。  
+ChangeLogで 「*」が付いたところをtDiaryでいうところのサブタイトルとして扱います。  
+訳が分からなくなるので、サブタイトルで統一します。
+
+#サブタイトルと同じ行に続けて書いたものはダメです
 
 ChangeLogでは、
 
     * hogehoge: 今日はよい天気でした
 
-というように書けるのですが、これはサポートしていません。
+というように書けるのですが、これはサポートしていません。  
+以下のように書いてください。
 
-- 引用
+    * hogehoge
+            今日はよい天気でした。
+
+
+
+## 引用
 tDiaryの引用は、行頭にタブ（もしくはスペース？）を入れると引用になるのですが、
 タブを入れるのが面倒なので、[src] 〜 [/src]のように書けるようにしています。
 
@@ -157,7 +169,7 @@ tDiaryの引用は、行頭にタブ（もしくはスペース？）を入れ�
     引用からはずれます
 
 
-- リスト項目
+## リスト項目
 tDiaryのリスト項目は「*」ですが、これはChangeLogとかぶってしまうので、「-」で
 代用しています。(chalowの仕様だったと思います)
 
@@ -167,7 +179,7 @@ tDiaryのリスト項目は「*」ですが、これはChangeLogとかぶって�
 番号付きのリスト項目はtDiaryの通り「#」でいけるはずです。
 
 
-- amazon.rbプラグイン
+## amazon.rbプラグイン
 作者はamazonプラグインを使用しています。記法がどうしても覚えられないので
 以下のようにしました。
 
@@ -176,18 +188,18 @@ tDiaryのリスト項目は「*」ですが、これはChangeLogとかぶって�
 amazon:に続いて、ISBNなりASBNを続けます。
 これなら覚えられます。
 
-----------------------------------------
-その他
-----------------------------------------
+
+#その他
+
 
 cltdは作者が必要だと思った機能を実装しただけのものになっています。
 
 メンテナンスは作者のペースでするつもりですが、とりわけ必要なものも現段階では
 ないので・・・ごにょごにょ
 
-----------------------------------------
-ライセンス
-----------------------------------------
+
+#ライセンス
+
 
 ライセンスはGPL v2です。
 
