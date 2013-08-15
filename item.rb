@@ -9,14 +9,29 @@
 require 'time'
 require 'fileutils'
 
+
 class Item
+  CITATION_ON = 1
+  CITATION_OFF = 0
+  CITATION_SRC= /^\s*\[src\]/
+  UNCITATION_SRC = /^\s*\[\/src\]/
+  CITATION_DOUBLE_GREATER = /^\s*>>/
+  UNCITATION_DOUBLE_GREATER = /^\s*<</
+  CITATION_GREATER_THAN = /^\s*>\s*/
+  CARRIAGE_RETURN = /^\s*$/
+  ITEMIZE = /^\s*-\s*/
+  PLG_AMAZON=/^\s*amazon\:\s*\d*-\d*/
+#  PLG_DETAIL="{{isbn_detail #{isdn} }}\n"
+
   HEADER = "header: "
   BODY = "body: "
   attr_reader :header
   attr_reader :body
   @header = nil
   @body = nil
+  @quo = CITATION_OFF
   def initialize(item_header)
+    @quo = CITATION_OFF
     @header = nil
     @body = nil
     i_header(item_header)
@@ -48,18 +63,9 @@ class Item
       }
     end
   end
-  CITATION_ON = 1
-  CITATION_OFF = 0
-  CITATION_SRC= /^\s*\[src\]/
-  UNCITATION_SRC = /^\s*\[\/src\]/
-  CITATION_DOUBLE_GREATER = /^\s*>>/
-  UNCITATION_DOUBLE_GREATER = /^\s*<</
-  CITATION_GREATER_THAN = /^\s*>\s*/
-  CARRIAGE_RETURN = /^\s*$/
-  ITEMIZE = /^\s*-\s*/
-  PLG_AMAZON=/^\s*amazon\:\s*\d*-\d*/
-#  PLG_DETAIL="{{isbn_detail #{isdn} }}\n"
-  @quo = CITATION_OFF
+  def isQuo
+    return @quo
+  end
   def citation(line)
 #    if(line =~ /^\s*$/)
 #      line.gsub!(/^\s*$/,"\n\n")
@@ -71,10 +77,12 @@ class Item
       @quo = CITATION_OFF
       line = "\n"
       return line
-    elsif(@quo == CITATION_ON)
+    end
+    if(@quo == CITATION_ON)
       line.gsub!(/^\s*/,"\t")
       return line
-    elsif(line =~ CITATION_GREATER_THAN)
+    end
+    if(line =~ CITATION_GREATER_THAN)
       line.gsub!(/^\s*>\s*/,"\t")
       return line
     elsif(line =~ CARRIAGE_RETURN)

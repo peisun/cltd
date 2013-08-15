@@ -17,7 +17,7 @@ class Entory
   attr_reader :item
   attr_reader :i
   CHLOG_DATE_FORMAT = /^\d\d\d\d-\d\d-\d\d/
-  CHLOG_HEADER_FORMAT = /^\s*\*/
+  CHLOG_HEADER_FORMAT = /^\s*\*{1}\s/
   @entory_date = nil
   @item = nil
   @i = nil
